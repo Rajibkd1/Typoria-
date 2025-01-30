@@ -1,17 +1,14 @@
 <?php
 session_start();
 
-
-// Check if user is logged in
 if (!isset($_SESSION['user_id'])) {
-    header("Location: login.php"); // Redirect to login page if not logged in
+    header("Location: login.php"); 
     exit();
 }
 
-include "./db_connection.php"; // Include your database connection script
-include "./navbar.php"; // Include your database connection script
-
-$post_id = $_GET['post_id'] ?? null; // Get the post_id from the URL
+include "./db_connection.php"; 
+include "./navbar.php"; 
+$post_id = $_GET['post_id'] ?? null;
 
 if (!$post_id) {
     echo "Invalid post ID.";

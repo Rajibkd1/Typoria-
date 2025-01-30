@@ -115,6 +115,28 @@ $comments_result = $stmt->get_result();
             transform: translateY(-5px);
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
+
+        /* Scrollable Comments Container */
+        .comments-container {
+            max-height: 300px; /* Adjust height as needed */
+            overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: #6b46c1 #e9d8fd;
+        }
+
+        .comments-container::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .comments-container::-webkit-scrollbar-track {
+            background: #e9d8fd;
+            border-radius: 4px;
+        }
+
+        .comments-container::-webkit-scrollbar-thumb {
+            background: #6b46c1;
+            border-radius: 4px;
+        }
     </style>
 </head>
 
@@ -146,17 +168,25 @@ $comments_result = $stmt->get_result();
                 </div>
 
                 <!-- Like Section -->
-                <div class="flex items-center justify-between mb-8">
-                    <div class="flex items-center space-x-2">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-red-500" fill="currentColor" viewBox="0 0 24 24">
-                            <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
-                        </svg>
-                        <span class="text-2xl font-bold text-gray-800"><?php echo $likes_count; ?></span>
+                <div class="flex items-center justify-between mb-8 p-6 bg-gradient-to-r from-purple-50 to-blue-50 rounded-lg shadow-sm">
+                    <div class="flex items-center space-x-3">
+                        <!-- Heart Icon -->
+                        <div class="relative">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-red-500 hover:text-red-600 transition-all duration-300" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+                            </svg>
+                            <!-- Like Count -->
+                            <span class="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full">
+                                <?php echo $likes_count; ?>
+                            </span>
+                        </div>
+                        <span class="text-xl font-semibold text-gray-800">Likes</span>
                     </div>
 
                     <?php if ($isLoggedIn) : ?>
-                        <form method="POST" class="flex items-center space-x-2">
-                            <button type="submit" name="like" class="like-button flex items-center space-x-2 bg-blue-500 text-white px-6 py-3 rounded-lg hover:bg-blue-600 transition-all duration-300">
+                        <!-- Like Button -->
+                        <form method="POST">
+                            <button type="submit" name="like" class="like-button flex items-center space-x-2 bg-gradient-to-r from-purple-600 to-blue-600 text-white px-6 py-3 rounded-lg hover:from-purple-700 hover:to-blue-700 transition-all duration-300 transform hover:scale-105">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
                                     <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
                                 </svg>
@@ -164,42 +194,93 @@ $comments_result = $stmt->get_result();
                             </button>
                         </form>
                     <?php else : ?>
+                        <!-- Login Prompt -->
                         <p class="text-gray-600 italic">Log in to like this post.</p>
                     <?php endif; ?>
                 </div>
 
                 <!-- Comments Section -->
-                <h2 class="text-3xl font-bold text-gray-800 mb-6">Comments</h2>
-                <?php if ($isLoggedIn) : ?>
-                    <form method="POST" class="mb-8">
-                        <textarea name="comment_text" rows="4" class="w-full p-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="Add a comment..."></textarea>
-                        <button type="submit" class="mt-4 bg-blue-500 text-white px-6 py-3 rounded-lg hover:bg-blue-600 transition-all duration-300">Post Comment</button>
-                    </form>
-                <?php else : ?>
-                    <p class="text-gray-600 italic">Log in to post a comment.</p>
-                <?php endif; ?>
+                <div class="bg-gradient-to-r from-purple-50 to-blue-50 rounded-lg shadow-sm p-6 mb-8">
+                    <h2 class="text-3xl font-bold text-gray-800 mb-6">Comments</h2>
 
-                <!-- Display Comments -->
-                <div class="space-y-6">
-                    <?php while ($comment = $comments_result->fetch_assoc()) : ?>
-                        <div class="comment-card p-6 bg-gray-50 rounded-lg shadow-md">
-                            <div class="flex items-center space-x-4">
-                                <div class="h-12 w-12 bg-blue-500 text-white rounded-full flex items-center justify-center font-bold text-xl">
-                                    <?php echo strtoupper($comment['user_name'][0]); ?>
+                    <?php if ($isLoggedIn) : ?>
+                        <!-- Comment Form -->
+                        <form method="POST" class="mb-8">
+                            <textarea name="comment_text" rows="4" class="w-full p-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300" placeholder="Add a comment..."></textarea>
+                            <button type="submit" class="mt-4 bg-gradient-to-r from-purple-600 to-blue-600 text-white px-6 py-3 rounded-lg hover:from-purple-700 hover:to-blue-700 transition-all duration-300 transform hover:scale-105">
+                                Post Comment
+                            </button>
+                        </form>
+                    <?php else : ?>
+                        <!-- Login Prompt -->
+                        <p class="text-gray-600 italic">Log in to post a comment.</p>
+                    <?php endif; ?>
+
+                    <!-- See Comments Button -->
+                    <button id="see-comments-btn" class="w-full bg-gradient-to-r from-purple-600 to-blue-600 text-white px-6 py-3 rounded-lg hover:from-purple-700 hover:to-blue-700 transition-all duration-300 transform hover:scale-105 mb-6">
+                        See Comments
+                    </button>
+
+                    <!-- Comments Container (Hidden by Default) -->
+                    <div id="comments-container" class="comments-container space-y-6 hidden">
+                        <?php
+                        $comment_count = 0;
+                        while ($comment = $comments_result->fetch_assoc()) :
+                            $comment_count++;
+                            if ($comment_count > 5) break; // Show only 5 comments initially
+                        ?>
+                            <div class="comment-card p-6 bg-white rounded-lg shadow-md transform transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
+                                <div class="flex items-center space-x-4">
+                                    <!-- User Avatar -->
+                                    <div class="h-12 w-12 bg-gradient-to-r from-purple-500 to-blue-500 text-white rounded-full flex items-center justify-center font-bold text-xl">
+                                        <?php echo strtoupper($comment['user_name'][0]); ?>
+                                    </div>
+                                    <div>
+                                        <!-- User Name -->
+                                        <p class="text-lg font-medium text-gray-800"><?php echo htmlspecialchars($comment['user_name']); ?></p>
+                                        <!-- Comment Timestamp -->
+                                        <p class="text-sm text-gray-500"><?php echo htmlspecialchars($comment['created_at']); ?></p>
+                                    </div>
                                 </div>
-                                <div>
-                                    <p class="text-lg font-medium text-gray-800"><?php echo htmlspecialchars($comment['user_name']); ?></p>
-                                    <p class="text-sm text-gray-500"><?php echo htmlspecialchars($comment['created_at']); ?></p>
-                                </div>
+                                <!-- Comment Text -->
+                                <p class="mt-4 text-gray-700"><?php echo htmlspecialchars($comment['comment']); ?></p>
                             </div>
-                            <p class="mt-4 text-gray-700"><?php echo htmlspecialchars($comment['comment']); ?></p>
-                        </div>
-                    <?php endwhile; ?>
+                        <?php endwhile; ?>
+
+                        <!-- Load More Comments (if more than 5) -->
+                        <?php if ($comments_result->num_rows > 5) : ?>
+                            <div id="load-more-comments" class="text-center mt-6">
+                                <button class="bg-gradient-to-r from-purple-600 to-blue-600 text-white px-6 py-3 rounded-lg hover:from-purple-700 hover:to-blue-700 transition-all duration-300 transform hover:scale-105">
+                                    Load More Comments
+                                </button>
+                            </div>
+                        <?php endif; ?>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
+    <!-- JavaScript for Toggle and Load More -->
+    <script>
+        // Toggle Comments Visibility
+        const seeCommentsBtn = document.getElementById('see-comments-btn');
+        const commentsContainer = document.getElementById('comments-container');
+
+        seeCommentsBtn.addEventListener('click', () => {
+            commentsContainer.classList.toggle('hidden');
+            seeCommentsBtn.textContent = commentsContainer.classList.contains('hidden') ? 'See Comments' : 'Hide Comments';
+        });
+
+        // Load More Comments
+        const loadMoreBtn = document.getElementById('load-more-comments');
+        if (loadMoreBtn) {
+            loadMoreBtn.addEventListener('click', () => {
+                // Fetch and append more comments (you can implement this with AJAX or PHP)
+                alert('Load more comments functionality can be implemented here.');
+            });
+        }
+    </script>
 </body>
 
 </html>
