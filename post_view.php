@@ -85,6 +85,37 @@ $comments_result = $stmt->get_result();
     <title><?php echo htmlspecialchars($post['title']); ?></title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Custom CSS for Animations -->
+    <style>
+        .fade-in {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .like-button:hover svg {
+            transform: scale(1.1);
+            transition: transform 0.2s ease-in-out;
+        }
+
+        .comment-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .comment-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+    </style>
 </head>
 
 <body class="min-h-screen bg-gray-100">
@@ -92,21 +123,23 @@ $comments_result = $stmt->get_result();
     <?php include "./navbar.php"; ?>
 
     <div class="container mx-auto px-4 py-8">
-        <div class="max-w-4xl mx-auto bg-white rounded-lg shadow-md overflow-hidden">
+        <div class="max-w-4xl mx-auto bg-white rounded-lg shadow-lg overflow-hidden fade-in">
             <!-- Post Image -->
-            <div>
-                <img class="w-full h-72 object-cover" src="./uploads/<?php echo htmlspecialchars($post['image']); ?>" alt="Post Image">
+            <div class="relative">
+                <img class="w-full h-96 object-cover" src="./uploads/<?php echo htmlspecialchars($post['image']); ?>" alt="Post Image">
+                <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
+                <div class="absolute bottom-0 left-0 p-6">
+                    <h1 class="text-4xl font-bold text-white"><?php echo htmlspecialchars($post['title']); ?></h1>
+                </div>
             </div>
 
             <!-- Post Content -->
-            <div class="p-6">
-                <!-- Post Title -->
-                <h1 class="text-3xl font-bold text-gray-800 mb-4"><?php echo htmlspecialchars($post['title']); ?></h1>
-
+            <div class="p-8">
                 <!-- Post Details -->
-                <p class="text-gray-600 mb-6 leading-relaxed"><?php echo htmlspecialchars($post['details']); ?></p>
+                <p class="text-gray-700 leading-relaxed mb-8"><?php echo htmlspecialchars($post['details']); ?></p>
 
-                <div class="text-sm text-gray-500 mb-6">
+                <!-- Post Metadata -->
+                <div class="flex flex-col space-y-2 text-sm text-gray-600 mb-8">
                     <p>Posted by: <span class="font-medium text-gray-800"><?php echo htmlspecialchars($post['user_name']); ?></span></p>
                     <p>Category: <span class="font-medium text-gray-800"><?php echo htmlspecialchars($post['category']); ?></span></p>
                     <p>Posted on: <span class="font-medium text-gray-800"><?php echo htmlspecialchars($post['date_time']); ?></span></p>
@@ -115,15 +148,15 @@ $comments_result = $stmt->get_result();
                 <!-- Like Section -->
                 <div class="flex items-center justify-between mb-8">
                     <div class="flex items-center space-x-2">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-red-500" fill="currentColor" viewBox="0 0 24 24">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-red-500" fill="currentColor" viewBox="0 0 24 24">
                             <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
                         </svg>
-                        <span class="text-gray-800 font-medium"><?php echo $likes_count; ?></span>
+                        <span class="text-2xl font-bold text-gray-800"><?php echo $likes_count; ?></span>
                     </div>
 
                     <?php if ($isLoggedIn) : ?>
                         <form method="POST" class="flex items-center space-x-2">
-                            <button type="submit" name="like" class="flex items-center space-x-2 bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600">
+                            <button type="submit" name="like" class="like-button flex items-center space-x-2 bg-blue-500 text-white px-6 py-3 rounded-lg hover:bg-blue-600 transition-all duration-300">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
                                     <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
                                 </svg>
@@ -136,30 +169,30 @@ $comments_result = $stmt->get_result();
                 </div>
 
                 <!-- Comments Section -->
-                <h2 class="text-2xl font-bold text-gray-800 mb-4">Comments</h2>
+                <h2 class="text-3xl font-bold text-gray-800 mb-6">Comments</h2>
                 <?php if ($isLoggedIn) : ?>
-                    <form method="POST" class="mb-6">
-                        <textarea name="comment_text" rows="3" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500" placeholder="Add a comment..."></textarea>
-                        <button type="submit" class="mt-3 bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600">Post Comment</button>
+                    <form method="POST" class="mb-8">
+                        <textarea name="comment_text" rows="4" class="w-full p-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="Add a comment..."></textarea>
+                        <button type="submit" class="mt-4 bg-blue-500 text-white px-6 py-3 rounded-lg hover:bg-blue-600 transition-all duration-300">Post Comment</button>
                     </form>
                 <?php else : ?>
                     <p class="text-gray-600 italic">Log in to post a comment.</p>
                 <?php endif; ?>
 
                 <!-- Display Comments -->
-                <div class="space-y-4">
+                <div class="space-y-6">
                     <?php while ($comment = $comments_result->fetch_assoc()) : ?>
-                        <div class="p-4 bg-gray-100 rounded-lg shadow-md">
+                        <div class="comment-card p-6 bg-gray-50 rounded-lg shadow-md">
                             <div class="flex items-center space-x-4">
-                                <div class="h-10 w-10 bg-blue-500 text-white rounded-full flex items-center justify-center font-bold">
+                                <div class="h-12 w-12 bg-blue-500 text-white rounded-full flex items-center justify-center font-bold text-xl">
                                     <?php echo strtoupper($comment['user_name'][0]); ?>
                                 </div>
                                 <div>
-                                    <p class="text-gray-800 font-medium"><?php echo htmlspecialchars($comment['user_name']); ?></p>
+                                    <p class="text-lg font-medium text-gray-800"><?php echo htmlspecialchars($comment['user_name']); ?></p>
                                     <p class="text-sm text-gray-500"><?php echo htmlspecialchars($comment['created_at']); ?></p>
                                 </div>
                             </div>
-                            <p class="mt-2 text-gray-600"><?php echo htmlspecialchars($comment['comment']); ?></p>
+                            <p class="mt-4 text-gray-700"><?php echo htmlspecialchars($comment['comment']); ?></p>
                         </div>
                     <?php endwhile; ?>
                 </div>

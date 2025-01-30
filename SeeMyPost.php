@@ -11,9 +11,8 @@ include "./db_connection.php"; // Include your database connection script here
 $user_id = $_SESSION['user_id'];
 
 // Fetch posts for the logged-in user
-$sql = "SELECT posts.*, users.name AS user_name, categories.category 
+$sql = "SELECT posts.*, categories.category 
 FROM posts 
-JOIN users ON posts.user_id = users.user_id 
 JOIN categories ON posts.category_id = categories.category_id
 WHERE posts.user_id = $user_id";
 
@@ -35,51 +34,54 @@ if (!$result) {
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.0.3/dist/tailwind.min.css">
     <style>
         .post-card {
-            max-width: 600px;
-            margin: 20px auto;
-            padding: 20px;
-            border: 1px solid #ccc;
-            border-radius: 8px;
-            background-color: #fff;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .post-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
         }
     </style>
 </head>
 
 <body class="min-h-screen bg-gray-100">
 
+    <div class="container mx-auto px-4 py-8">
+        <h1 class="text-4xl font-bold text-center mb-8 text-gray-800">My Posts</h1>
 
-    <div class="flex flex-wrap justify-center mt-8">
-        <?php
-        if ($result->num_rows > 0) {
-            // Output data of each row
-            while ($row = $result->fetch_assoc()) {
-                $imagePath = './uploads/' . $row['image']; // Path to the image file
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <?php
+    if ($result->num_rows > 0) {
+        // Output data of each row
+        while ($row = $result->fetch_assoc()) {
+            $imagePath = './uploads/' . $row['image']; // Path to the image file
 
-                echo '
-                <div class="max-w-sm mx-4 bg-white rounded-lg shadow-md overflow-hidden mb-4">
-                    <!-- Post Image -->
-                    <img class="w-full h-48 object-cover" src="' . $imagePath . '" alt="Post Image">
-                    <!-- Post Content -->
-                    <div class="p-4">
-                        <!-- Post Title -->
-                        <h2 class="text-lg font-semibold text-gray-800">' . $row['title'] . '</h2>
-                        <!-- Post Description -->
-                        <p class="text-gray-600 mt-2">Description: ' . $row['details'] . '</p>
-                        <p>Posted by ' . $row['user_name'] . '</p>
-                        <p>Category: ' . $row['category'] . '</p>
-                        <!-- Edit Button -->
-                       <a href="EditPost.php?post_id=' . $row['post_id'] . '" 
-                               class="inline-block mt-4 px-4 py-2 text-sm font-medium leading-5 text-white transition-colors duration-150 bg-gradient-to-r from-purple-600 to-pink-600 rounded-lg shadow-md hover:from-purple-700 hover:to-pink-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 focus:ring-offset-gray-100">
-                                Edit Post
-                            </a>
-                    </div>
-                </div>';
-            }
-        } else {
-            echo "<p class='text-gray-800'>You have not created any posts yet.</p>";
+            echo '
+            <div class="post-card bg-white rounded-lg shadow-lg overflow-hidden transform transition-all duration-300 hover:scale-105 hover:shadow-2xl">
+                <!-- Post Image -->
+                <img class="w-full h-48 object-cover" src="' . $imagePath . '" alt="Post Image">
+                <!-- Post Content -->
+                <div class="p-6">
+                    <!-- Post Title -->
+                    <h2 class="text-xl font-bold text-gray-800 mb-4 hover:text-purple-600 transition-colors duration-300">' . $row['title'] . '</h2>
+                    <!-- Category -->
+                    <p class="text-sm text-gray-600 mb-4">
+                        <span class="font-semibold">Category:</span> 
+                        <span class="bg-purple-100 text-purple-600 px-2 py-1 rounded-full text-xs">' . $row['category'] . '</span>
+                    </p>
+                    <!-- Edit Button -->
+                    <a href="EditPost.php?post_id=' . $row['post_id'] . '" 
+                       class="inline-block w-full text-center px-4 py-2 text-sm font-medium text-white bg-gradient-to-r from-purple-600 to-indigo-600 rounded-lg hover:from-purple-700 hover:to-indigo-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 transition-all duration-300">
+                        Edit Post
+                    </a>
+                </div>
+            </div>';
         }
-        ?>
+    } else {
+        echo '<p class="text-gray-800 text-center w-full text-lg">You have not created any posts yet.</p>';
+    }
+    ?>
+</div>
     </div>
 
 </body>
