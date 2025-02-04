@@ -10,6 +10,7 @@ if (isset($_SESSION['user_id'])) {
 
 // Include database connection
 include "./db_connection.php";
+include "./navbar.php";
 
 // Fetch categories from database
 $sql = "SELECT * FROM categories";
@@ -33,17 +34,14 @@ if ($result->num_rows > 0) {
     <title>Create a New Post</title>
     <!-- Tailwind CSS CDN -->
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-    <!-- Animate.css CDN for animations -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
-    <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <!-- Custom CSS -->
     <style>
         body {
             font-family: 'Poppins', sans-serif;
         }
         .gradient-bg {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg,rgb(135, 153, 234) 0%,rgb(181, 123, 240) 100%);
         }
         .gradient-button {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -51,10 +49,41 @@ if ($result->num_rows > 0) {
         .gradient-button:hover {
             background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
         }
+        .falling-letters {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            pointer-events: none;
+        }
+        .falling-letters span {
+            position: absolute;
+            display: block;
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 24px;
+            font-weight: bold;
+            animation: animate 5s linear infinite;
+            bottom: -150px;
+        }
+        @keyframes animate {
+            0% {
+                transform: translateY(0) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-1000px) rotate(720deg);
+                opacity: 0;
+            }
+        }
     </style>
 </head>
 
 <body class="gradient-bg">
+
+    <!-- Falling Letters Effect -->
+    <div class="falling-letters" id="falling-letters"></div>
 
     <div class="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
         <div class="max-w-2xl w-full bg-white p-10 rounded-2xl shadow-2xl transform transition-all duration-500 hover:scale-105">
@@ -92,6 +121,36 @@ if ($result->num_rows > 0) {
         </div>
     </div>
 
+    <!-- JavaScript for Falling Letters Effect -->
+    <script>
+        const titleInput = document.getElementById('title');
+        const fallingLettersContainer = document.getElementById('falling-letters');
+
+        titleInput.addEventListener('input', (event) => {
+            const inputValue = event.target.value;
+            const lastChar = inputValue[inputValue.length - 1];
+
+            if (lastChar) {
+                createFallingLetter(lastChar);
+            }
+        });
+
+        function createFallingLetter(letter) {
+            const span = document.createElement('span');
+            span.textContent = letter;
+            span.style.left = `${Math.random() * 100}%`;
+            span.style.animationDuration = `${Math.random() * 3 + 2}s`;
+            span.style.color = `rgba(${Math.random() * 255}, ${Math.random() * 255}, ${Math.random() * 255}, 0.8)`;
+            span.style.fontSize = `${Math.random() * 24 + 16}px`;
+
+            fallingLettersContainer.appendChild(span);
+
+            // Remove the span after the animation ends
+            span.addEventListener('animationend', () => {
+                span.remove();
+            });
+        }
+    </script>
 </body>
 
 </html>

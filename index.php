@@ -1,6 +1,7 @@
 <?php
 include "./db_connection.php";
 include "./auth.php";
+include_once './navbar.php';
 ?>
 
 <!DOCTYPE html>
@@ -84,10 +85,10 @@ include "./auth.php";
     <!-- Particle Background -->
     <div id="particles-js"></div>
 
-    <?php include "./navbar.php"; ?>
+   
 
     <div class="container mx-auto px-4 py-8 relative z-10">
-        <h1 class="text-4xl font-bold text-center text-gray-800 mb-8 animated-text">Explore Posts</h1>
+        <h1 class="text-4xl font-bold text-center text-gray-800 mb-8 animated-text">Trending Posts</h1>
 
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             <?php
