@@ -84,12 +84,12 @@ $TYPORIA_MENU = [
     ],
     [
         'title' => 'About',
-        'url' => 'about.php',
+        'url' => '#',
         'icon' => 'info'
     ],
     [
         'title' => 'Contact',
-        'url' => 'contact.php',
+        'url' => '#',
         'icon' => 'mail'
     ],
 ];
@@ -98,23 +98,23 @@ $TYPORIA_MENU = [
 $TYPORIA_FOOTER = [
     [
         'title' => 'About',
-        'url' => 'about.php'
+        'url' => '#'
     ],
     [
         'title' => 'Features',
-        'url' => 'features.php'
+        'url' => '#'
     ],
     [
         'title' => 'Privacy Policy',
-        'url' => 'privacy.php'
+        'url' => '#'
     ],
     [
         'title' => 'Terms of Service',
-        'url' => 'terms.php'
+        'url' => '#'
     ],
     [
         'title' => 'Contact',
-        'url' => 'contact.php'
+        'url' => '#'
     ],
 ];
 

@@ -166,23 +166,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['resend_otp'])) {
 // Generate HTML header
 typoria_header("Verify Email", "
     .otp-container {
-        max-width: 420px;
+        max-width: 480px;
         margin: 0 auto;
     }
     
     .otp-form {
         transition: transform 0.3s ease-out, box-shadow 0.3s ease-out;
+        background: linear-gradient(to bottom, #ffffff, #fafafa);
+        border: 1px solid rgba(229, 231, 235, 0.8);
     }
     
     .otp-form:hover {
         transform: translateY(-5px);
-        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
     }
     
     .gradient-line {
         height: 4px;
         background: linear-gradient(135deg, #3B82F6, #8B5CF6);
         border-radius: 4px;
+        animation: shimmer 2s infinite linear;
+        background-size: 200% 100%;
+    }
+    
+    @keyframes shimmer {
+        0% { background-position: 100% 0; }
+        100% { background-position: -100% 0; }
     }
     
     .otp-input {
@@ -211,26 +220,28 @@ typoria_header("Verify Email", "
     }
     
     .digit-input {
-        width: 40px;
-        height: 50px;
+        width: 50px;
+        height: 60px;
         border: 2px solid #d1d5db;
-        border-radius: 8px;
+        border-radius: 12px;
         text-align: center;
-        font-size: 24px;
+        font-size: 28px;
         font-weight: bold;
         transition: all 0.2s ease;
+        background-color: #f9fafb;
     }
     
     .digit-input:focus {
         border-color: #3B82F6;
         box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
         outline: none;
+        background-color: white;
     }
     
     #status-message {
         display: none;
         padding: 1rem;
-        border-radius: 0.5rem;
+        border-radius: 0.75rem;
         margin-top: 1rem;
     }
     
@@ -268,10 +279,83 @@ typoria_header("Verify Email", "
     
     .gradient-button {
         background: linear-gradient(135deg, #3B82F6, #8B5CF6);
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+        box-shadow: 0 4px 12px rgba(139, 92, 246, 0.2);
     }
     
     .gradient-button:hover {
         background: linear-gradient(135deg, #2563EB, #7C3AED);
+        transform: translateY(-2px);
+        box-shadow: 0 8px 15px rgba(139, 92, 246, 0.3);
+    }
+    
+    .gradient-button:active {
+        transform: translateY(1px);
+    }
+    
+    .spam-notice {
+        background-color: #FEF3C7;
+        border-left: 4px solid #F59E0B;
+        color: #92400E;
+        padding: 1rem;
+        border-radius: 0.5rem;
+        margin-top: 1.5rem;
+        margin-bottom: 1.5rem;
+        display: flex;
+        align-items: flex-start;
+    }
+    
+    .spam-notice-icon {
+        flex-shrink: 0;
+        margin-right: 0.75rem;
+        margin-top: 0.125rem;
+    }
+    
+    .email-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 64px;
+        height: 64px;
+        background: linear-gradient(135deg, #3B82F6, #8B5CF6);
+        border-radius: 50%;
+        margin: 0 auto 1.5rem;
+        color: white;
+    }
+    
+    .resend-container {
+        background-color: #F9FAFB;
+        border-radius: 0.75rem;
+        padding: 1.5rem;
+        margin-top: 1.5rem;
+        text-align: center;
+        border: 1px solid #E5E7EB;
+    }
+    
+    .resend-button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0.5rem 1.25rem;
+        background-color: white;
+        color: #3B82F6;
+        border: 1px solid #E5E7EB;
+        border-radius: 0.5rem;
+        font-weight: 500;
+        transition: all 0.2s ease;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    }
+    
+    .resend-button:hover {
+        background-color: #F3F4F6;
+        border-color: #D1D5DB;
+        color: #2563EB;
+    }
+    
+    .resend-button svg {
+        margin-right: 0.5rem;
     }
 ");
 ?>
@@ -282,7 +366,12 @@ typoria_header("Verify Email", "
 <div class="container mx-auto px-4 py-12">
     <div class="otp-container">
         <div class="text-center mb-6">
-            <h1 class="text-3xl font-bold text-gray-800 mb-2 font-serif">Verify Your Email</h1>
+            <div class="email-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                </svg>
+            </div>
+            <h1 class="text-3xl font-bold text-gray-800 mb-3 font-serif">Verify Your Email</h1>
             <p class="text-gray-600">We've sent a verification code to <span class="font-medium"><?php echo htmlspecialchars($email); ?></span></p>
         </div>
         
@@ -301,6 +390,17 @@ typoria_header("Verify Email", "
                     <p><?php echo $success_message; ?></p>
                 </div>
             <?php endif; ?>
+            
+            <!-- Spam Notice -->
+            <div class="spam-notice">
+                <svg xmlns="http://www.w3.org/2000/svg" class="spam-notice-icon h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+                </svg>
+                <div>
+                    <p class="font-medium">Can't find the verification code?</p>
+                    <p class="mt-1">Please check your spam or junk folder. If you still don't see it, click the "Resend Code" button below.</p>
+                </div>
+            </div>
             
             <form method="POST" id="otp-form">
                 <!-- Hidden input to store complete OTP -->
@@ -372,12 +472,15 @@ typoria_header("Verify Email", "
         </div>
         
         <!-- Resend OTP -->
-        <div class="text-center">
-            <p class="text-gray-600 mb-2">
+        <div class="resend-container">
+            <p class="text-gray-700 mb-3">
                 Didn't receive the code or code expired?
             </p>
             <form method="post">
-                <button type="submit" name="resend_otp" class="text-typoria-primary hover:text-typoria-secondary font-medium">
+                <button type="submit" name="resend_otp" class="resend-button">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clip-rule="evenodd" />
+                    </svg>
                     Resend Code
                 </button>
             </form>
