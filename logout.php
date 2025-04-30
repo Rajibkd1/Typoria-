@@ -1,14 +1,19 @@
 <?php
-// Initialize the session
-session_start();
+/**
+ * Typoria Blog Platform
+ * Logout Handler
+ */
 
-// Unset all session variables
-$_SESSION = array();
+// We need to define a placeholder for functions from functions.php
+// to prevent redeclaration errors when auth.php tries to include functions.php
+define('FUNCTIONS_ALREADY_LOADED', true);
 
-// Destroy the session
-session_destroy();
+// Now include auth.php directly to get the logout_user function
+require_once 'includes/auth.php';
 
-// Redirect to index.php
+// Log the user out using the function from auth.php
+logout_user();
+
+// Redirect to home page
 header("Location: index.php");
-exit;
-?>
+exit();
